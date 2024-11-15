@@ -44,7 +44,7 @@ def train(
     epoch_avg_loss /= epochs
     
     if verbose:
-      print(f"Avg loss (loop {loop}): {epoch_avg_loss: .4f}")
+      print(f"Avg loss (loop {loop + 1}): {epoch_avg_loss: .4f}")
   
   print("Training finished!")
   return None

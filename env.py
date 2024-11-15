@@ -12,7 +12,7 @@ from models.model import Model
 from data.dataset_handler import ModelDataset
 from argparsing import parse_args
 from data.dataloader import (
-  DataLoaders,
+  data_loaders,
   IN_FEATURES
 )
 from model_tools import (
@@ -34,6 +34,8 @@ def main():
   TEST_LOOPS: int = 10
   TRAIN_LOOPS: int = 25
   EPOCHS: int = 100
+  TRAIN_BATCH: int = 0
+  TEST_BATCH: int = 0
   VERBOSE: bool = False
   COMPILE: bool
   
@@ -51,19 +53,35 @@ def main():
   if args.epochs:
     EPOCHS = args.epochs
   
+  if args.trainbatch:
+    TRAIN_BATCH = args.trainbatch
+  
+  if args.testbatch:
+    TEST_BATCH = args.testbatch
+  
   VERBOSE = args.verbose
   COMPILE = args.compile
   
-  model: torch.nn.Module = Model(in_features=IN_FEATURES, device=DEVICE)
+  if TRAIN_BATCH and TEST_BATCH:
+    DataLoaders = data_loaders(train_batch_size=TRAIN_BATCH, test_batch_size=TEST_BATCH)
+  elif TRAIN_BATCH and not TEST_BATCH:
+    DataLoaders = data_loaders(train_batch_size=TRAIN_BATCH)
+  elif not TRAIN_BATCH and TEST_BATCH:
+    DataLoaders = data_loaders(test_batch_size=TEST_BATCH)
+  else:
+    DataLoaders = data_loaders()
   
-  print()
-  print(summary(model=model.to('cpu'), input_size=INPUT_SHAPE))
-  print()
+  model: torch.nn.Module = Model(in_features=IN_FEATURES, device=torch.device('cpu'))
   
-  model.to(device=DEVICE)
+  if False:
+    print()
+    print(summary(model=model.to('cpu'), input_size=INPUT_SHAPE))
+    print()
   
   if COMPILE:
-    model = torch.compile(model, fullgraph=True, model='default')
+    model = torch.compile(model, fullgraph=True)
+  
+  model.to(device=DEVICE)
   
   optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
   criterion = torch.nn.BCEWithLogitsLoss()
