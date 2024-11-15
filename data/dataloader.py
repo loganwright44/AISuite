@@ -10,10 +10,11 @@ test_dataset = ModelDataset(higgs_dataset_directory=os.path.dirname(os.path.absp
 
 
 IN_FEATURES = train_dataset.__getinfeatures__()
-BATCH_SIZE = 256
+BATCH_SIZE_TRAIN = 256
+BATCH_SIZE_TEST = 5
 
 
 DataLoaders = {
-  'train': DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True),
-  'test': DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
+  'train': DataLoader(train_dataset, batch_size=BATCH_SIZE_TRAIN, shuffle=True),
+  'test': DataLoader(test_dataset, batch_size=BATCH_SIZE_TEST, shuffle=False)
 }
